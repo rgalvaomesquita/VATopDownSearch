@@ -6,7 +6,7 @@
 #include <conio.h>
 #include "dirent.h"
 #include <Parameters.h>
-#include <serializablebloom\bloom_filter.hpp>
+#include <bloom_filter.hpp>
 
 int readFileToMat(cv::Mat &I, std::string path);
 void read_object(char fileKpObject[100], std::vector<cv::KeyPoint>& kp_object_vec, char fileDesObject[100], cv::Mat& des_object_vec);
