@@ -138,9 +138,6 @@ int main(void)
 			dirFilters << ROOT_DIR.c_str() << DIR_FILTERS.c_str();
 			if (TRAIN)
 				CreateDirectoryA(dirFilters.str().c_str(), NULL);
-			dirFilters << "NBITS_" << NBITS << "_MAX_DIST_" << MAX_DIST << "\\";
-			if (TRAIN)
-				CreateDirectoryA(dirFilters.str().c_str(), NULL);
 			dirFilters << objs[contObjs] << "\\";
 
 			std::cout << "filters dir: " << dirFilters.str() << std::endl;

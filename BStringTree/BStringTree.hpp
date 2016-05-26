@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv\cxcore.h>
 #include <Parameters.h>
-#include <bloom_filter.hpp>
+#include <serializablebloom\bloom_filter.hpp>
 
 class BStringTree
 {
