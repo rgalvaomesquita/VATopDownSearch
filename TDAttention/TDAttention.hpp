@@ -7,7 +7,7 @@
 #include <Parameters.h>
 #include <BStringTree.hpp>
 #include <Homography_Match.hpp>
-#include <serializablebloom\bloom_filter.hpp>
+#include <bloom_filter.hpp>
 
 typedef struct indexedResponses{
 	float response;
