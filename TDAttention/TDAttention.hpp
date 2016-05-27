@@ -15,14 +15,14 @@ typedef struct indexedResponses{
 }IndexedResponses;
 
 
-float percKP;
+
 float timeTD;
 int numDesc;
 double FPprob;
 
 void train(cv::Mat img, bloom_filter* filters[MAX_DIST + 1]);
 int trainTrees(bloom_filter* filters[MAX_DIST + 1], std::stringstream& dirFilters, std::stringstream& dirObjects, std::string* objs, int contObjs);
-bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* des_obj_collection, int qtObjColl, std::vector<std::vector<cv::KeyPoint>>& kp_obj_collection, float* processingTime, std::vector<int>& sequencePoses, int* qtDetect, cv::Mat*& img_obj_collection, bool verbose, char fileName[], std::string& obj, bool searchAtNonSalLoc, bool randomKp, float percSalKp, cv::Mat sceneColor, std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, bool orderByResponse);
+bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* des_obj_collection, int qtObjColl, std::vector<std::vector<cv::KeyPoint>>& kp_obj_collection, float* processingTime, std::vector<int>& sequencePoses, int* qtDetect, cv::Mat*& img_obj_collection, bool verbose, char fileName[], std::string& obj, bool randomKp, float percSalKp, cv::Mat sceneColor, std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, bool orderByResponse, float& propPriorKp);
 bool runClassicSearch(cv::Mat& scene, cv::Mat* des_obj_collection, int qtObjColl, std::vector<std::vector<cv::KeyPoint>>& kp_obj_collection, std::vector<int>& sequencePoses, cv::Mat*& img_obj_collection, bool verbose, char fileName[], std::string& obj, std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene);
 void getKpOrderedByResponse(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, float percSalKp, std::vector<cv::KeyPoint> selectedKeypoints[3], cv::Mat descSelected[3], std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
 void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<int>& sequencePoses, cv::Mat& descriptorsFirst, std::vector<cv::KeyPoint> kptsBCT[3], cv::Mat descBCT[3], std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
@@ -209,7 +209,7 @@ void getKpOrderedByResponse(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descr
 	std::sort(sortedKp.begin(), sortedKp.end(), compareKeypointsResponses);
 
 
-	int lastRndKp = kptsScene.size()*percSalKp / 100;
+	int lastRndKp = kptsScene.size()*percSalKp;
 
 	for (int i = 0; i < kptsScene.size(); i++)
 	{
@@ -242,7 +242,7 @@ void getRandomKp(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene,
 		rndKp.push_back(i);
 
 	std::random_shuffle(rndKp.begin(), rndKp.end());
-	int lastRndKp = kptsScene.size()*percSalKp / 100;
+	int lastRndKp = kptsScene.size()*percSalKp;
 
 	for (int i = 0; i < kptsScene.size(); i++)
 	{
@@ -335,7 +335,7 @@ void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<in
 
 
 
-bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* des_obj_collection, int qtObjColl, std::vector<std::vector<cv::KeyPoint>>& kp_obj_collection, float* processingTime, std::vector<int>& sequencePoses, cv::Mat*& img_obj_collection, bool verbose, char fileName[], std::string& obj, bool searchAtNonSalLoc, bool randomKp, float percSalKp, cv::Mat sceneColor, std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, bool orderByResponse)
+bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* des_obj_collection, int qtObjColl, std::vector<std::vector<cv::KeyPoint>>& kp_obj_collection, float* processingTime, std::vector<int>& sequencePoses, cv::Mat*& img_obj_collection, bool verbose, char fileName[], std::string& obj, bool randomKp, float percSalKp, cv::Mat sceneColor, std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, bool orderByResponse, float& propPriorKp)
 {
 
 
@@ -404,8 +404,8 @@ bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* d
 		timeTD += (ttd1 - ttd0) / cv::getTickFrequency();
 
 		for (int d = 0; d < MAX_DIST + 1; d++)
-			percKP += prioritizedKpts[d].size();
-		percKP /= ((float)kptsScene.size());
+			propPriorKp += prioritizedKpts[d].size();
+		propPriorKp /= ((float)kptsScene.size());
 		numDesc += descriptorScene.rows;
 	}
 
@@ -457,7 +457,7 @@ bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* d
 					if (randomKp)
 						st2 << "\\obj_" << obj << "_scene_" << fileName << "_RND.jpg";
 					else if (orderByResponse)
-						st2 << "\\obj_" << obj << "_scene_" << fileName << "_OBR.jpg";
+						st2 << "\\obj_" << obj << "_scene_" << fileName << "_SBR.jpg";
 					else
 						st2 << "\\obj_" << obj << "_scene_" << fileName << "_BloomFilter_TDAttention.jpg";
 					imwrite(st2.str(), matchImg);
@@ -557,7 +557,7 @@ bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* d
 				if (randomKp)
 					st2 << "\\obj_" << obj << "_scene_" << fileName << "_RND_MatchNear.jpg";
 				else if (orderByResponse)
-					st2 << "\\obj_" << obj << "_scene_" << fileName << "_OBR_MatchNear.jpg";
+					st2 << "\\obj_" << obj << "_scene_" << fileName << "_SBR_MatchNear.jpg";
 				else
 					st2 << "\\obj_" << obj << "_scene_" << fileName << "_BloomFilter_TDAttention_MatchNear.jpg";
 				imwrite(st2.str(), matchImg);
@@ -584,7 +584,7 @@ bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* d
 
 	//----end-----search for keypoints near not matched BCT keypoints
 
-	if (!searchAtNonSalLoc)
+	if (!SEARCH_ALL_KP)
 		return  false;
 
 	//search using the rest of the keypoints 
@@ -628,7 +628,7 @@ bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* d
 				if (randomKp)
 					st2 << "\\obj_" << obj << "_scene_" << fileName << "_RND_MatchAll.jpg";
 				else if (orderByResponse)
-					st2 << "\\obj_" << obj << "_scene_" << fileName << "_OBR_MatchAll.jpg";
+					st2 << "\\obj_" << obj << "_scene_" << fileName << "_SBR_MatchAll.jpg";
 				else
 					st2 << "\\obj_" << obj << "_scene_" << fileName << "_BloomFilter_TDAttention_MatchAll.jpg";
 				imwrite(st2.str(), matchImg);

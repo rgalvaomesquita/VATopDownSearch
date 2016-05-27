@@ -30,6 +30,7 @@ int main(void)
 	int TP_tdbf, TN_tdbf, FP_tdbf, FN_tdbf;
 	ofstream outputExecTime;
 
+	
 
 	std::srand(unsigned(std::time(0)));
 
@@ -58,9 +59,9 @@ int main(void)
 	{
 		
 		if (i <= 2)
-			parameters[i].projected_element_count = 16 * 5000;
+			parameters[i].projected_element_count = 16 * 2000;
 		else
-			parameters[i].projected_element_count = 16 * 1000;
+			parameters[i].projected_element_count = 16 * 500;
 
 		for (int j = 0; j < i; j++)
 			parameters[i].projected_element_count *= (NBITS - j);
@@ -78,11 +79,11 @@ int main(void)
 
 	CreateDirectoryA(ROOT_DIR.c_str(), NULL);
 
-	for (int iter = 0; iter < 1; iter++)
-		for (int contObjs = FIRST_OBJECT; contObjs < LAST_OBJECT; contObjs++)
+	for (int iter = 0; iter < NUM_EXEC; iter++)
+		for (int contObjs = FIRST_OBJECT-1; contObjs < LAST_OBJECT; contObjs++)
 		{
 
-
+			float propPriorKp = 0;
 			std::vector<float> propBCT;
 			int qtAcertosSal = 0;
 			std::stringstream pathTxtExecTime;
@@ -139,6 +140,7 @@ int main(void)
 			if (TRAIN)
 				CreateDirectoryA(dirFilters.str().c_str(), NULL);
 			dirFilters << "NBITS_" << NBITS << "_MAX_DIST_" << MAX_DIST << "\\";
+			
 			if (TRAIN)
 				CreateDirectoryA(dirFilters.str().c_str(), NULL);
 			dirFilters << objs[contObjs] << "\\";
@@ -265,7 +267,7 @@ int main(void)
 
 				int t0_rnd = cv::getTickCount();
 				//RANDOM SEARCH
-				encontrou = runTDSearch(filters, scene, des_obj_collection, kp_obj_collection.size(), kp_obj_collection, &processingTime, sequence, img_obj_collection, VERBOSE, dp0->d_name, objs[contObjs], true, true, percKpSal[contObjs], sceneColor, kptsScene, descriptorScene, false);
+				encontrou = runTDSearch(filters, scene, des_obj_collection, kp_obj_collection.size(), kp_obj_collection, &processingTime, sequence, img_obj_collection, VERBOSE, dp0->d_name, objs[contObjs], true, percKpSal[contObjs], sceneColor, kptsScene, descriptorScene, false, propPriorKp);
 
 				int tf_rnd = cv::getTickCount();
 				time_rnd.push_back((tf_rnd - t0_rnd) / cv::getTickFrequency());
@@ -300,7 +302,7 @@ int main(void)
 				
 				int t0_obr = cv::getTickCount();
 				//SORT KEYPOINTS BY RESPONSE
-				encontrou = runTDSearch(filters, scene, des_obj_collection, kp_obj_collection.size(), kp_obj_collection, &processingTime, sequence, img_obj_collection, VERBOSE, dp0->d_name, objs[contObjs], true, false, percKpSal[contObjs], sceneColor, kptsScene, descriptorScene, true);
+				encontrou = runTDSearch(filters, scene, des_obj_collection, kp_obj_collection.size(), kp_obj_collection, &processingTime, sequence, img_obj_collection, VERBOSE, dp0->d_name, objs[contObjs], false, percKpSal[contObjs], sceneColor, kptsScene, descriptorScene, true, propPriorKp);
 				
 
 				int tf_obr = cv::getTickCount();
@@ -342,7 +344,7 @@ int main(void)
 
 				int t0_tdbf = cv::getTickCount();
 				//TD attention using Bloom Filters
-				encontrou = runTDSearch(filters, scene, des_obj_collection, kp_obj_collection.size(), kp_obj_collection, &processingTime, sequence, img_obj_collection, VERBOSE, dp0->d_name, objs[contObjs], true, false, 0.0, sceneColor, kptsScene, descriptorScene, false);
+				encontrou = runTDSearch(filters, scene, des_obj_collection, kp_obj_collection.size(), kp_obj_collection, &processingTime, sequence, img_obj_collection, VERBOSE, dp0->d_name, objs[contObjs], false, 0.0, sceneColor, kptsScene, descriptorScene, false, propPriorKp);
 				int tf_tdbf = cv::getTickCount();
 
 				time_tdbf.push_back((tf_tdbf - t0_tdbf) / cv::getTickFrequency());
@@ -408,20 +410,18 @@ int main(void)
 
 			}//finish processing scenes
 
-			std::cout << percKP / 51.0 << std::endl;
+			
 
 
 			std::cout << "Finished processing image scenes with object " << objs[contObjs] << "!";
 			outputExecTime.open(pathTxtExecTime.str(), fstream::app);
 			//getch();
-			outputExecTime << std::endl << "time TD-Attention: " << timeTD / 51.0 << std::endl;
+			outputExecTime << std::endl << "\n*********\n\ntime TD-Attention: " << timeTD / NUM_SCENES << std::endl;
 			timeTD = 0;
-			outputExecTime << "avg. number of scene descriptors: " << numDesc / 51.0 << std::endl;
+			outputExecTime << "avg. number of scene descriptors: " << numDesc / NUM_SCENES << std::endl;
 			numDesc = 0;
-			outputExecTime << "FP Rate: " << FPprob << std::endl;
-			numDesc = 0;
-			outputExecTime << std::endl << percKP / 51.0 << std::endl;
-			percKP = 0;
+			outputExecTime << "% of prioritized keypoints: " << propPriorKp / NUM_SCENES << std::endl;
+			propPriorKp = 0;
 			outputExecTime << "\nTIMES CLASSIC METHOD: " << endl;
 			float recall = 0;
 			float precision = 0;
@@ -452,7 +452,7 @@ int main(void)
 
 			}
 			totalTimeClassic /= time_classic.size();
-			outputExecTime << "TOTAL TIME:" << totalTimeClassic << " TIME TRUE POSITIVE CASES:" << timeClassicTP / numberOfAgreedTP;
+			outputExecTime << "AVERAGE TIME:" << totalTimeClassic << " AVERAGE TIME(TRUE POSITIVE CASES):" << timeClassicTP / numberOfAgreedTP;
 
 			outputExecTime << "\nTIMES RANDOM METHOD: " << endl;
 			recall = 0;
@@ -484,7 +484,7 @@ int main(void)
 
 			}
 			totalTimeRnd /= time_rnd.size();
-			outputExecTime << "TOTAL TIME:" << totalTimeRnd << " TIME TRUE POSITIVE CASES:" << timeRndTP / numberOfAgreedTP;
+			outputExecTime << "AVERAGE TIME:" << totalTimeRnd << " AVERAGE TIME(TRUE POSITIVE CASES):" << timeRndTP / numberOfAgreedTP;
 
 			outputExecTime << "\nTIMES 'SORT BY RESPONSE' METHOD: " << endl;
 			recall = 0;
@@ -516,8 +516,7 @@ int main(void)
 
 			}
 			totalTimeObr /= time_obr.size();
-			outputExecTime << "TOTAL TIME:" << totalTimeObr << " TIME TRUE POSITIVE CASES:" << timeObrTP / numberOfAgreedTP;
-
+			outputExecTime << "AVERAGE TIME:" << totalTimeObr << " AVERAGE TIME(TRUE POSITIVE CASES):" << timeObrTP / numberOfAgreedTP;
 			outputExecTime << "\nTIME 'TD-ATTENTION BLOOM FILTER' METHOD: " << endl;
 			recall = 0;
 			precision = 0;
@@ -548,8 +547,7 @@ int main(void)
 
 			}
 			totalTimeBctAll /= time_tdbf.size();
-			outputExecTime << "TOTAL TIME:" << totalTimeBctAll << " TIME TRUE POSITIVE CASES:" << timeBctAllTP / numberOfAgreedTP;
-
+			outputExecTime << "AVERAGE TIME:" << totalTimeBctAll << " AVERAGE TIME(TRUE POSITIVE CASES):" << timeBctAllTP / numberOfAgreedTP;
 			time_classic.clear();
 			time_rnd.clear();
 			time_obr.clear();
