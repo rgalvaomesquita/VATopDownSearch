@@ -34,4 +34,5 @@ const std::string DIR_FILTERS = "filters_akaze\\";
 //location to save images of matches between object and scene images, in case VERBOSE parameter is set to true
 const std::string DIR_IMG_MATCHES = "img_matches\\";
 
-
+const int expectedNumKp = 16 * 4000;
+const float desiredFPProb = 0.001;

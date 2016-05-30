@@ -1,11 +1,11 @@
 #include <iostream>
 
-#define MAX_DIST 3
+#define MAX_DIST 2
 #define NUM_MIN_MATCHES 4
 #define NBITS 72
 #define KNN_RATIO 0.6
 #define VERBOSE false
-#define TRAIN 1
+#define TRAIN 0
 #define GENERATE_KP_DES false
 #define NUM_SCENES 51
 #define NUM_OBJECTS 8
@@ -26,3 +26,6 @@ extern const std::string DIR_IMG_MATCHES;
 extern std::string objs[NUM_OBJECTS];
 extern float percKpSal[NUM_OBJECTS];
 extern const bool GT[NUM_OBJECTS][NUM_SCENES];
+
+extern const int expectedNumKp;
+extern const float desiredFPProb;

@@ -55,26 +55,12 @@ int main(void)
 
 	/// bloom filter's settings
 	bloom_parameters parameters[MAX_DIST + 1];
-	for (int i = 0; i < MAX_DIST + 1; i++)
+	
+	if (!setBloomFilterParameters(parameters, expectedNumKp, desiredFPProb))
 	{
-		
-		if (i <= 2)
-			parameters[i].projected_element_count = 16 * 2000;
-		else
-			parameters[i].projected_element_count = 16 * 500;
-
-		for (int j = 0; j < i; j++)
-			parameters[i].projected_element_count *= (NBITS - j);
-		parameters[i].false_positive_probability = 0.001;
-		parameters[i].random_seed = 0xA5A5A5A5;
-		if (!parameters[i])
-		{
-			std::cout << "Error - Invalid set of bloom filter parameters!" << std::endl;
-			return 1;
-		}
-
-		parameters[i].compute_optimal_parameters();
-		
+		std::cout << "\nInvalid bloom filter parameters!\n";
+		getch();
+		exit(0);
 	}
 
 	CreateDirectoryA(ROOT_DIR.c_str(), NULL);

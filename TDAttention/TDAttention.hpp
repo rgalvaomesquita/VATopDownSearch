@@ -31,6 +31,47 @@ void getKpOrderedByResponse(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descr
 bool compareKeypointsResponses(IndexedResponses a, IndexedResponses b);
 
 
+
+unsigned int factorial(unsigned int n)
+{
+	unsigned int retval = 1;
+	for (int i = n; i > 1; --i)
+		retval *= i;
+	return retval;
+}
+
+bool setBloomFilterParameters(bloom_parameters parameters[MAX_DIST + 1], int expectedNumberOfKp, float desiredFPProb)
+{
+	for (int i = 0; i < MAX_DIST + 1; i++)
+	{
+
+		/*if (i <= 2)
+			parameters[i].projected_element_count = 16 * 4000;
+		else
+			parameters[i].projected_element_count = 16 * 4000;*/
+
+		parameters[i].projected_element_count = expectedNumberOfKp;
+
+		for (int j = 0; j < i; j++)
+			parameters[i].projected_element_count *= (NBITS - j);
+		
+		parameters[i].projected_element_count /= factorial(i);
+
+		parameters[i].false_positive_probability = desiredFPProb;
+		parameters[i].random_seed = 0xA5A5A5A5;
+		if (!parameters[i])
+		{
+			std::cout << "Error - Invalid set of bloom filter parameters!" << std::endl;
+			return false;
+		}
+
+		parameters[i].compute_optimal_parameters();
+
+	}
+
+	return true;
+}
+
 int trainTrees(bloom_filter* filters[MAX_DIST + 1], std::stringstream& dirFilters, std::stringstream& dirObjects, std::string* objs, int contObjs)
 {
 
