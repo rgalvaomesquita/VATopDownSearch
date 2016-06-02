@@ -24,10 +24,10 @@ void train(cv::Mat img, bloom_filter* filters[MAX_DIST + 1]);
 int trainTrees(bloom_filter* filters[MAX_DIST + 1], std::stringstream& dirFilters, std::stringstream& dirObjects, std::string* objs, int contObjs);
 bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* des_obj_collection, int qtObjColl, std::vector<std::vector<cv::KeyPoint>>& kp_obj_collection, float* processingTime, std::vector<int>& sequencePoses, int* qtDetect, cv::Mat*& img_obj_collection, bool verbose, char fileName[], std::string& obj, bool randomKp, float percSalKp, cv::Mat sceneColor, std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, bool orderByResponse, float& propPriorKp);
 bool runClassicSearch(cv::Mat& scene, cv::Mat* des_obj_collection, int qtObjColl, std::vector<std::vector<cv::KeyPoint>>& kp_obj_collection, std::vector<int>& sequencePoses, cv::Mat*& img_obj_collection, bool verbose, char fileName[], std::string& obj, std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene);
-void getKpOrderedByResponse(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, float percSalKp, std::vector<cv::KeyPoint> selectedKeypoints[3], cv::Mat descSelected[3], std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
-void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<int>& sequencePoses, cv::Mat& descriptorsFirst, std::vector<cv::KeyPoint> kptsBCT[3], cv::Mat descBCT[3], std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
-void getRandomKp(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, float percSalKp, std::vector<cv::KeyPoint> selectedKeypoints[3], cv::Mat descSelected[3], std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
-void getKpOrderedByResponse(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, float percSalKp, std::vector<cv::KeyPoint> selectedKeypoints[3], cv::Mat descSelected[3], std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
+void getKpOrderedByResponse(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, float percSalKp, std::vector<cv::KeyPoint> selectedKeypoints[MAX_DIST + 1], cv::Mat descSelected[MAX_DIST + 1], std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
+void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<int>& sequencePoses, cv::Mat& descriptorsFirst, std::vector<cv::KeyPoint> kptsBCT[MAX_DIST + 1], cv::Mat descBCT[MAX_DIST + 1], std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
+void getRandomKp(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, float percSalKp, std::vector<cv::KeyPoint> selectedKeypoints[MAX_DIST + 1], cv::Mat descSelected[MAX_DIST + 1], std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
+void getKpOrderedByResponse(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, float percSalKp, std::vector<cv::KeyPoint> selectedKeypoints[MAX_DIST + 1], cv::Mat descSelected[MAX_DIST + 1], std::vector<cv::KeyPoint>& kpNotSal, cv::Mat& descNotSal);
 bool compareKeypointsResponses(IndexedResponses a, IndexedResponses b);
 
 
@@ -56,9 +56,11 @@ bool setBloomFilterParameters(bloom_parameters parameters[MAX_DIST + 1], int exp
 			parameters[i].projected_element_count *= (NBITS - j);
 		
 		parameters[i].projected_element_count /= factorial(i);
-
+		
+		
 		parameters[i].false_positive_probability = desiredFPProb;
 		parameters[i].random_seed = 0xA5A5A5A5;
+		
 		if (!parameters[i])
 		{
 			std::cout << "Error - Invalid set of bloom filter parameters!" << std::endl;
@@ -68,7 +70,7 @@ bool setBloomFilterParameters(bloom_parameters parameters[MAX_DIST + 1], int exp
 		parameters[i].compute_optimal_parameters();
 
 	}
-
+	//getchar();
 	return true;
 }
 
@@ -116,6 +118,7 @@ int trainTrees(bloom_filter* filters[MAX_DIST + 1], std::stringstream& dirFilter
 
 
 		objCounter++;
+		
 
 	}
 	closedir(fd);
@@ -310,7 +313,7 @@ void getRandomKp(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene,
 	}
 }
 
-void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<int>& sequencePoses, cv::Mat& descriptorsFirst, std::vector<cv::KeyPoint> prioritizedKpts[3], cv::Mat prioritizedDesc[3], std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, std::vector<cv::KeyPoint>& remainingKpts, cv::Mat& remainingDesc)
+void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<int>& sequencePoses, cv::Mat& descriptorsFirst, std::vector<cv::KeyPoint> prioritizedKpts[MAX_DIST + 1], cv::Mat prioritizedDesc[MAX_DIST + 1], std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, std::vector<cv::KeyPoint>& remainingKpts, cv::Mat& remainingDesc)
 {
 
 
@@ -445,9 +448,14 @@ bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* d
 		timeTD += (ttd1 - ttd0) / cv::getTickFrequency();
 
 		for (int d = 0; d < MAX_DIST + 1; d++)
+		{
+			//std::cout << prioritizedKpts[d].size()<<std::endl;
 			propPriorKp += prioritizedKpts[d].size();
+		}
+		//std::cout << kptsScene.size() << std::endl;
 		propPriorKp /= ((float)kptsScene.size());
 		numDesc += descriptorScene.rows;
+		//getchar();
 	}
 
 

@@ -35,4 +35,4 @@ const std::string DIR_FILTERS = "filters_akaze\\";
 const std::string DIR_IMG_MATCHES = "img_matches\\";
 
 const int expectedNumKp = 16 * 4000;
-const float desiredFPProb = 0.001;
+const float desiredFPProb = 0.01;
