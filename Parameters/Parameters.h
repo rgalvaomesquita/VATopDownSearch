@@ -12,7 +12,7 @@
 #define FIRST_OBJECT 2
 #define LAST_OBJECT 8
 #define NUM_EXEC 1
-#define SEARCH_ALL_KP false
+#define SEARCH_ALL_KP true
 
 extern const std::string DIR_IMGS_TEST;
 extern const std::string DIR_OBJECTS;
