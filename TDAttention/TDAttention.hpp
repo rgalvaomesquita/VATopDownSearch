@@ -382,7 +382,7 @@ void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<in
 bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* des_obj_collection, int qtObjColl, std::vector<std::vector<cv::KeyPoint>>& kp_obj_collection, float* processingTime, std::vector<int>& sequencePoses, cv::Mat*& img_obj_collection, bool verbose, char fileName[], std::string& obj, bool randomKp, float percSalKp, cv::Mat sceneColor, std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene, bool orderByResponse, float& propPriorKp)
 {
 
-
+	float propPriorKPScene = 0;
 
 	float dist = std::min(scene.rows, scene.cols)*0.05;
 	std::vector<cv::KeyPoint>* kp_image_final;
@@ -449,13 +449,13 @@ bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* d
 
 		for (int d = 0; d < MAX_DIST + 1; d++)
 		{
-			//std::cout << prioritizedKpts[d].size()<<std::endl;
-			propPriorKp += prioritizedKpts[d].size();
+			propPriorKPScene += prioritizedKpts[d].size();
 		}
-		//std::cout << kptsScene.size() << std::endl;
-		propPriorKp /= ((float)kptsScene.size());
+
+		propPriorKPScene /= ((float)kptsScene.size());
+		propPriorKp += propPriorKPScene;
 		numDesc += descriptorScene.rows;
-		//getchar();
+		
 	}
 
 
