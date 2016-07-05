@@ -208,9 +208,9 @@ int main(void)
 				vector<cv::KeyPoint> kptsScene;
 				cv::Mat descriptorScene;
 
-
+				
 				akaze->detectAndCompute(scene, cv::noArray(), kptsScene, descriptorScene);
-
+				
 				
 
 				bool flgCountTP = true;
@@ -257,7 +257,7 @@ int main(void)
 
 				int tf_rnd = cv::getTickCount();
 				time_rnd.push_back((tf_rnd - t0_rnd) / cv::getTickFrequency());
-
+				
 				flgCountTP = flgCountTP && encontrou;
 				if (GT[contObjs][contImg - 1] == true)
 				{

@@ -30,7 +30,7 @@ BStringTree::BStringTree(int nbits, cv::Mat& descriptors, float ratio_knn, int m
 	uchar* ptr;
 	std::vector<BStringTree::bitchain> bitStrings;
 
-	BStringTree::bitchain tempBitString(0);
+	BStringTree::bitchain tempBitString(NBITS, '0');
 	int temp, firstBit, count;
 	this->maxDist = maxDist;
 	if (!binarized)
@@ -45,7 +45,7 @@ BStringTree::BStringTree(int nbits, cv::Mat& descriptors, float ratio_knn, int m
 
 				for (int bit = firstBit; bit < firstBit + 8; bit++)
 				{
-					tempBitString[bit] = temp % 2;
+					tempBitString[bit] = temp % 2 == 0 ? '0': '1';
 
 					
 					temp = temp / 2;
@@ -66,7 +66,7 @@ BStringTree::BStringTree(int nbits, cv::Mat& descriptors, float ratio_knn, int m
 			for (int j = 0; j < descriptors.cols; j++)
 			{
 
-				tempBitString[currentBit] = ptr[j];
+				tempBitString[currentBit] = ptr[j] == 0 ? '0' : '1';
 
 				currentBit++;
 			}
@@ -242,10 +242,10 @@ void BStringTree::populateNeighbours(std::vector<BStringTree::bitchain>& bitStri
 			int b = topNode.firstBit;
 			q.top().firstBit++;
 			currentBitSet = currentBitSetOriginal;
-			currentBitSet[b].flip();
+			currentBitSet[b] == '0' ? '1' : '0';
 			
 			exactBitSet = false;
-			int currentLevel = currentBitSet.count();
+			
 
 			
 			int currentDistance;

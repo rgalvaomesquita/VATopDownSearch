@@ -11,7 +11,7 @@ class BStringTree
 {
 public:
 
-	typedef std::bitset<NBITS> bitchain;
+	typedef std::string bitchain;
 	typedef struct TreeNode
 	{
 		bool exist;

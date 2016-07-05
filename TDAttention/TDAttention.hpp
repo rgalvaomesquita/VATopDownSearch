@@ -319,7 +319,8 @@ void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<in
 
 
 	
-	BStringTree::bitchain searchString(0);
+	BStringTree::bitchain searchString(NBITS,'0');
+	//BStringTree::bitchain searchString(0);
 	for (int i = 0; i < descriptorsFirst.rows; i++)
 	{
 
@@ -344,7 +345,7 @@ void getBCTKp(bloom_filter* filters[MAX_DIST + 1], int qtObjColl, std::vector<in
 			for (int bit = firstBit; bit < firstBit + 8; bit++)
 			{
 
-				searchString[bit] = temp % 2;
+				searchString[bit] = temp % 2 == 0? '0' : '1';
 				temp = temp / 2;
 			}
 			firstBit += 8;
@@ -544,8 +545,8 @@ bool runTDSearch(bloom_filter* filters[MAX_DIST + 1], cv::Mat& scene, cv::Mat* d
 				if (sqrtf(powf(remainingKpts[i].pt.x - kp_image_final[pose][j].pt.x, 2) + powf(remainingKpts[i].pt.y - kp_image_final[pose][j].pt.y, 2)) < dist)
 				{
 					flagInsertedNearMatch = true;
-					kptsNearMatches.push_back(kptsScene[i]);
-					descNearMatches.push_back(descriptorScene.row(i));
+					kptsNearMatches.push_back(remainingKpts[i]);
+					descNearMatches.push_back(remainingDesc.row(i));
 					break;
 				}
 

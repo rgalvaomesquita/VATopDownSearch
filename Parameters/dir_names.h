@@ -8,7 +8,7 @@ const std::string DIR_OBJECTS = "R:\\Doutorado\\busca visual\\bases de dados\\po
 //file names for each object of the dataset
 std::string objs[8] = { "01", "02", "03", "04", "05", "06", "07", "08" };
 //percentual of keypoints selected to be prioritized during RANDOM_SEARCH 
-float percKpSal[] = { 0, 0.22, 0.04, 0.03, 0.03, 0.04, 0.04, 0.02 };
+float percKpSal[] = { 0, 0.08, 0.002, 0.0009, 0.001, 0.001, 0.002, 0.016 };
 
 const bool GT[8][51] = {
 	{ true, true, true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false },
