@@ -45,11 +45,6 @@ bool setBloomFilterParameters(bloom_parameters parameters[MAX_DIST + 1], int exp
 	for (int i = 0; i < MAX_DIST + 1; i++)
 	{
 
-		/*if (i <= 2)
-			parameters[i].projected_element_count = 16 * 4000;
-		else
-			parameters[i].projected_element_count = 16 * 4000;*/
-
 		parameters[i].projected_element_count = expectedNumberOfKp;
 
 		for (int j = 0; j < i; j++)
@@ -288,28 +283,17 @@ void getRandomKp(std::vector<cv::KeyPoint>& kptsScene, cv::Mat& descriptorScene,
 	std::random_shuffle(rndKp.begin(), rndKp.end());
 	int lastRndKp = kptsScene.size()*percSalKp;
 
-	for (int i = 0; i < kptsScene.size(); i++)
+	for (int i = 0; i < lastRndKp; i++)
+	{
+		prioritizedKpts[i*(MAX_DIST + 1) / lastRndKp].push_back(kptsScene[rndKp[i]]);
+		prioritizedDesc[i*(MAX_DIST + 1) / lastRndKp].push_back(descriptorScene.row(rndKp[i]));
+	}
+	for (int i = lastRndKp; i < kptsScene.size(); i++)
 	{
 
-		bool flagInserted = false;
-		for (int j = 1; j <= MAX_DIST + 1; j++)
-		{
-			if (i < j*lastRndKp / 3.0)
-			{
+		remainingKpts.push_back(kptsScene[rndKp[i]]);
+		remainingDesc.push_back(descriptorScene.row(rndKp[i]));
 
-				prioritizedKpts[j-1].push_back(kptsScene[rndKp[i]]);
-				prioritizedDesc[j-1].push_back(descriptorScene.row(rndKp[i]));
-				flagInserted = true;
-				break;
-			}
-		}
-
-		if (!flagInserted){
-			remainingKpts.push_back(kptsScene[rndKp[i]]);
-			remainingDesc.push_back(descriptorScene.row(rndKp[i]));
-		}
-
-		
 	}
 }
 

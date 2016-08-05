@@ -242,7 +242,10 @@ void BStringTree::populateNeighbours(std::vector<BStringTree::bitchain>& bitStri
 			int b = topNode.firstBit;
 			q.top().firstBit++;
 			currentBitSet = currentBitSetOriginal;
-			currentBitSet[b] == '0' ? '1' : '0';
+			if (currentBitSet[b] == '0')
+				currentBitSet[b] = '1';
+			else
+				currentBitSet[b] = '0';
 			
 			exactBitSet = false;
 			
