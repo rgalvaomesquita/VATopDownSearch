@@ -1,5 +1,9 @@
 ﻿This document contains instructions on how to run the method proposed in [1]. If you use this code for research purposes, 
-please cite our paper [1]:
+please cite our paper: 
+R. G. Mesquita, C. A. B. Mello and P. L. Castilho, "Visual search guided by an efficient top-down attention approach",
+in  IEEE International Conference on Image Processing (ICIP), 2016[1]:
+
+Image representing matching examples using the proposed method can be downloaded from https://www.dropbox.com/s/d4uf5xs8oli978b/img_matches%20-%20resized.rar?dl=0
 
 1. Environment configuration
 
@@ -137,7 +141,7 @@ please cite our paper [1]:
                 "MatchAll", if the target was found neither during the attention stage nor at promising locations, but only when the remaining descriptors were matched
 
 
-[1]
+[1] R. G. Mesquita, C. A. B. Mello and P. L. Castilho, "Visual search guided by an efficient top-down attention approach", in  IEEE International Conference on Image Processing (ICIP), 2016
 
 [2] F. Rothganger, S. Lazebnik, C. Schmid, and J.Ponce, “3D object modeling and recognition using
 local affine-invariant image descriptors and multiview spatial constraints,” Int. J. Comput. Vis., vol.
