@@ -1,4 +1,5 @@
-﻿This document contains instructions on how to run the method proposed in [1]. If you use this code for research purposes, 
+﻿The source code of this project is available at https://github.com/rgalvaomesquita/VATopDownSearch.
+This document contains instructions on how to run the method proposed in [1]. If you use this code for research purposes, 
 please cite our paper: 
 R. G. Mesquita, C. A. B. Mello and P. L. Castilho, "Visual search guided by an efficient top-down attention approach",
 in  IEEE International Conference on Image Processing (ICIP), 2016[1]:
